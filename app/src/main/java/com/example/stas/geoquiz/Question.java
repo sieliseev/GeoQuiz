@@ -8,6 +8,7 @@ public class Question {
 
     private int mTextResId;
     private boolean mAnswerTrue;
+    private boolean mAlreadyAnswer;
 
     public Question(int textResId, boolean answerTrue) {
         mTextResId = textResId;
@@ -28,5 +29,13 @@ public class Question {
 
     public void setAnswerTrue(boolean answerTrue) {
         mAnswerTrue = answerTrue;
+    }
+
+    public boolean isAlreadyAnswer() {
+        return mAlreadyAnswer;
+    }
+
+    public void setAlreadyAnswer(boolean alreadyAnswer) {
+        mAlreadyAnswer = alreadyAnswer;
     }
 }

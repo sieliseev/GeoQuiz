@@ -3,6 +3,7 @@ package com.example.stas.geoquiz;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -12,7 +13,11 @@ import android.widget.Toast;
 public class QuizActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
+    private static final String MY_TAG = "TestingAnswer";
     private static final String KEY_INDEX = "index";
+    private static final String KEY_INDEX_ANSWER = "indexAnswer";
+    private static final String KEY_INDEX_ANSWERED = "indexAnswered";
+    private static final String KEY_INDEX_SCORE = "indexScore";
 
     private Button mTrueButton, mFalseButton;
     private ImageButton mNextButton, mPrevButton;
@@ -26,6 +31,9 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true)
     };
     private int mCurrentIndex = 0;
+    private boolean[] mQuestionsAnswered;
+    private int mScore = 0;
+    private int mIndexAnswered = 0;
 
     @Override
     protected void onStart() {
@@ -63,6 +71,12 @@ public class QuizActivity extends AppCompatActivity {
 
         outState.putInt(KEY_INDEX, mCurrentIndex);
         Log.d(TAG, "OnSaveInstanceState " + outState.getInt(KEY_INDEX));
+        for (int i = 0; i < mQuestionBank.length; i++) {
+            mQuestionsAnswered[i] = mQuestionBank[i].isAlreadyAnswer();
+        }
+        outState.putBooleanArray(KEY_INDEX_ANSWER, mQuestionsAnswered);
+        outState.putInt(KEY_INDEX_SCORE, mScore);
+        outState.putInt(KEY_INDEX_ANSWERED, mIndexAnswered);
     }
 
     @Override
@@ -71,12 +85,19 @@ public class QuizActivity extends AppCompatActivity {
         Log.d(TAG, "OnCreate(Bundle) called");
         setContentView(R.layout.activity_quiz);
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            for (int i = 0; i < mQuestionBank.length; i++) {
+                boolean[] questionsAnswered = savedInstanceState.getBooleanArray(KEY_INDEX_ANSWER);
+                mQuestionBank[i].setAlreadyAnswer(questionsAnswered[i]);
+            }
+            mScore = savedInstanceState.getInt(KEY_INDEX_SCORE);
+            mIndexAnswered = savedInstanceState.getInt(KEY_INDEX_ANSWERED);
         }
 
+        mQuestionsAnswered = new boolean[mQuestionBank.length];
+
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
-        updateQuestion();
         mQuestionTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,11 +136,20 @@ public class QuizActivity extends AppCompatActivity {
                 updatePrevQuestion();
             }
         });
+        updateQuestion();
     }
 
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+
+        if (!mQuestionBank[mCurrentIndex].isAlreadyAnswer()){
+            mTrueButton.setEnabled(true);
+            mFalseButton.setEnabled(true);
+        } else {
+            mTrueButton.setEnabled(false);
+            mFalseButton.setEnabled(false);
+        }
     }
 
     private void updateNextQuestion() {
@@ -141,9 +171,24 @@ public class QuizActivity extends AppCompatActivity {
         int messageResId = 0;
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
+            mScore++;
         } else {
             messageResId = R.string.incorrect_toast;
         }
         Toast.makeText(QuizActivity.this, messageResId, Toast.LENGTH_SHORT).show();
+        mIndexAnswered++;
+        if(mIndexAnswered == mQuestionBank.length){
+            int score = (int)((float)mScore/mQuestionBank.length*100);
+            Toast toast = Toast.makeText(QuizActivity.this, "Вы набрали " + score + "% правильных ответов", Toast.LENGTH_SHORT);
+            Log.d(MY_TAG, "Result "+ score);
+            toast.setGravity(Gravity.TOP, toast.getXOffset(), toast.getYOffset());
+            toast.show();
+        }
+        // блокируем кнопку если был дан ответ
+        if (!mQuestionBank[mCurrentIndex].isAlreadyAnswer()) {
+            mTrueButton.setEnabled(false);
+            mFalseButton.setEnabled(false);
+            mQuestionBank[mCurrentIndex].setAlreadyAnswer(true);
+        }
     }
 }
