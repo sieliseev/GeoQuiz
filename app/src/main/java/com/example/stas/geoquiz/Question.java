@@ -9,10 +9,12 @@ public class Question {
     private int mTextResId;
     private boolean mAnswerTrue;
     private boolean mAlreadyAnswer;
+    private boolean mCheatTrue;
 
     public Question(int textResId, boolean answerTrue) {
         mTextResId = textResId;
         mAnswerTrue = answerTrue;
+        mCheatTrue = false;
     }
 
     public int getTextResId() {
@@ -37,5 +39,13 @@ public class Question {
 
     public void setAlreadyAnswer(boolean alreadyAnswer) {
         mAlreadyAnswer = alreadyAnswer;
+    }
+
+    public boolean isCheatTrue() {
+        return mCheatTrue;
+    }
+
+    public void setCheatTrue(boolean cheatTrue) {
+        mCheatTrue = cheatTrue;
     }
 }
