@@ -21,6 +21,7 @@ public class QuizActivity extends AppCompatActivity {
     private static final String KEY_INDEX_CHEATED = "indexCheated";
     private static final String KEY_INDEX_ANSWERED = "indexAnswered";
     private static final String KEY_INDEX_SCORE = "indexScore";
+    private static final String KEY_INDEX_TOKENS = "indexTokens";
    // private static final String KEY_INDEX_CHEATED = "indexCheated";
     private static final int REQUEST_CODE_CHEAT = 0;
 
@@ -36,6 +37,7 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true)
     };
     private int mCurrentIndex = 0;
+    private int mTokensAmount = 3;
     private boolean mIsCheater;
     private boolean[] mQuestionsCheated;
     private boolean[] mQuestionsAnswered;
@@ -86,6 +88,7 @@ public class QuizActivity extends AppCompatActivity {
         outState.putBooleanArray(KEY_INDEX_CHEATED, mQuestionsCheated);
         outState.putInt(KEY_INDEX_SCORE, mScore);
         outState.putInt(KEY_INDEX_ANSWERED, mIndexAnswered);
+        outState.putInt(KEY_INDEX_TOKENS, mTokensAmount);
        // outState.putBoolean(KEY_INDEX_CHEATED, mIsCheater);
 
 
@@ -101,6 +104,7 @@ public class QuizActivity extends AppCompatActivity {
             if (data == null){
                 return;
             }
+            mTokensAmount = CheatActivity.getTokensAmount(data);
             mIsCheater = CheatActivity.wasAnswerShown(data);
             mQuestionBank[mCurrentIndex].setCheatTrue(mIsCheater);
         }
@@ -122,6 +126,7 @@ public class QuizActivity extends AppCompatActivity {
             }
             mScore = savedInstanceState.getInt(KEY_INDEX_SCORE);
             mIndexAnswered = savedInstanceState.getInt(KEY_INDEX_ANSWERED);
+            mTokensAmount = savedInstanceState.getInt(KEY_INDEX_TOKENS);
     //        mIsCheater = savedInstanceState.getBoolean(KEY_INDEX_CHEATED);
         }
 
@@ -161,7 +166,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // start CheatActivity
                 boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
-                Intent intent = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                Intent intent = CheatActivity.newIntent(QuizActivity.this, answerIsTrue, mTokensAmount);
                 startActivityForResult(intent, REQUEST_CODE_CHEAT);
             }
         });

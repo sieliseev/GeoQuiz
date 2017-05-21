@@ -15,10 +15,20 @@
         android:text="@string/warning_text"/>
 
     <TextView
+        android:id="@+id/tokens_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Amount of tokens"
+        android:textAllCaps="false"
+        android:textSize="4pt"
+        />
+
+    <TextView
         android:id="@+id/answer_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="24dp"
+        android:textStyle="bold"
         tools:text="Answer"/>
 
     <Button
@@ -26,5 +36,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/show_answer_button"/>
+
+    <TextView
+        android:id="@+id/build_version_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:textStyle="italic"
+        tools:text="Build Version"/>
 
 </LinearLayout>
